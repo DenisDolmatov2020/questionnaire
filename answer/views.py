@@ -4,7 +4,6 @@ from rest_framework.utils import json
 from rest_framework.viewsets import ViewSet
 from answer.models import Answer
 from answer.serializers import AnswerSerializer
-from question.models import Question
 
 
 class AnswerViewSet(ViewSet):

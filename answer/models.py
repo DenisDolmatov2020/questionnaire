@@ -16,4 +16,13 @@ class AnswerOption(models.Model):
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='answer_options')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
     text = models.TextField(verbose_name='Текс ответа', null=True)
-    option = models.ForeignKey(QuestionOption, on_delete=models.CASCADE, verbose_name='Вариант ответа', null=True)
+    # option = models.ForeignKey(QuestionOption, on_delete=models.CASCADE, verbose_name='Вариант ответа', null=True)
+
+
+class AnswerOptionItem(models.Model):
+    answer_option = models.ForeignKey(
+        AnswerOption, on_delete=models.CASCADE, related_name='answer_option_item'
+    )
+    question_option = models.ForeignKey(
+        QuestionOption, on_delete=models.CASCADE, verbose_name='Вариант ответа на вопрос', null=True
+    )
