@@ -1,56 +1,39 @@
 from rest_framework import serializers
-from answer.models import Answer, AnswerOption, AnswerOptionItem
-from question.serializers import QuestionOptionSerializer
-
-
-class AnswerOptionItemSerializer(serializers.ModelSerializer):
-    question_option = serializers.StringRelatedField()
-
-    class Meta:
-        model = AnswerOptionItem
-        fields = ('question_option',)
+from answer.models import InterviewUser, Answer, AnswerOption
 
 
 class AnswerOptionSerializer(serializers.ModelSerializer):
-    answer_option_item = AnswerOptionItemSerializer(many=True, required=False)
+    question_option = serializers.PKOnlyObject
 
     class Meta:
         model = AnswerOption
-        fields = '__all__'
-        read_only_fields = ('answer',)  # ответ будет создан в самой сериализации
+        fields = ('question_option',)
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    answer_options = AnswerOptionSerializer(many=True, required=False)
+    answer_option = AnswerOptionSerializer(many=True, required=False)
 
     class Meta:
         model = Answer
+        fields = ('id', 'text', 'question', 'answer_option')
+        read_only_fields = ('interview_user',)  # ответ будет создан в самой сериализации
+
+
+class InterviewUserSerializer(serializers.ModelSerializer):
+    answers = AnswerSerializer(many=True, required=False)
+
+    class Meta:
+        model = InterviewUser
         fields = '__all__'
 
     def create(self, validated_data):
-        answer_options = validated_data.pop('answer_options', [])  # получаем список ответов на вопросы
-        answer = Answer.objects.create(**validated_data)
-        if answer_options:
-            for index, answer_item in enumerate(answer_options):
-                question = answer_item['question']
-                if question.type_answer == 'single':
-                    answer_item['option_id'] = int(answer_item['text'])
-                    answer_item['text'] = ''
-                elif question.type_answer == 'multi':
-                    del answer_options[index]
-                    answer_options = answer_item['text'].split(',')
-                    answer_item['text'] = ''
-                    answer_option = AnswerOption.objects.create(answer=answer, **answer_item)
-                    for option in answer_options:
-                        AnswerOptionItem.objects.create(
-                            question_option_id=option, answer_option=answer_option
-                        )
-
-                        # multi_answers.append(answer_item)
-
-            # сохраняем все ответы пачкой
-            '''AnswerOption.objects.bulk_create(
-                AnswerOption(answer=answer, **item)
-                for item in answer_options + multi_answers
-            )'''
-        return answer
+        answers = validated_data.pop('answers', [])  # получаем список ответов на вопросы
+        interview_user = InterviewUser.objects.create(**validated_data)
+        for answer in answers:
+            question = answer['question']
+            answer_create = Answer.objects.create(interview_user=interview_user, **answer)
+            if question.type_answer == 'single' or question.type_answer == 'multi':
+                options = answer['text'].split(',')
+                for option in options:
+                    AnswerOption.objects.create(question_option_id=option, answer=answer_create)
+        return interview_user

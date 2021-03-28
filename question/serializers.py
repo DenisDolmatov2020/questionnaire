@@ -1,13 +1,12 @@
 from rest_framework import serializers
 from question.models import Question, QuestionOption
-# from interview.serializers import InterviewSerializer
 
 
 class QuestionOptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QuestionOption
-        fields = ('text',)
+        fields = '__all__'
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -15,4 +14,4 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = '__all__'
+        fields = ('text', 'type_answer', 'option')

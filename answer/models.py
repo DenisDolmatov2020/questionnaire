@@ -5,24 +5,22 @@ from interview.models import Interview
 from question.models import QuestionOption
 
 
-# создаем в базе полное интервью пройденное пользователем
-class Answer(models.Model):
+# создаем в базе полный опрос пройденный пользователем
+class InterviewUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     interview = models.ForeignKey(Interview, on_delete=models.CASCADE, verbose_name='Опрос')
 
 
-# выбранные варианты ответов на вопросы в опросе
-class AnswerOption(models.Model):
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='answer_options')
+# ответы на вопросы в опросе
+class Answer(models.Model):
+    interview_user = models.ForeignKey(InterviewUser, on_delete=models.CASCADE, related_name='answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
     text = models.TextField(verbose_name='Текс ответа', null=True)
-    # option = models.ForeignKey(QuestionOption, on_delete=models.CASCADE, verbose_name='Вариант ответа', null=True)
 
 
-class AnswerOptionItem(models.Model):
-    answer_option = models.ForeignKey(
-        AnswerOption, on_delete=models.CASCADE, related_name='answer_option_item'
-    )
+# выбраные варианты ответов
+class AnswerOption(models.Model):
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='answer_option')
     question_option = models.ForeignKey(
         QuestionOption, on_delete=models.CASCADE, verbose_name='Вариант ответа на вопрос', null=True
     )
