@@ -17,30 +17,12 @@ class AnswerViewSet(ViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args):
-        answer_options = json.loads(request.data.get('answer_options'))
-        answer_array = []
-        for index, answer_item in enumerate(answer_options):
-            question = Question.objects.get(id=answer_item['question'])
-            if question.type_answer == 'text':
-                if isinstance(answer_item['text'], list):
-                    answer_item['text'] = answer_item['text'][0]
-                answer_array.append({'text': answer_item['text'], 'question': answer_item['question']})
-            elif question.type_answer == 'single':
-                if isinstance(answer_item['option'], list):
-                    answer_item['option'] = answer_item['point'][0]
-                answer_array.append({'option': int(answer_item['option']), 'question': answer_item['question']})
-            if question.type_answer == 'multi':
-                if not isinstance(answer_item['option'], list):
-                    answer_item['option'] = answer_item['option'].split(',')
-                for a in answer_item['option']:
-                    answer_array.append({'option': int(a), 'question': answer_item['question']})
         data_ = request.data.dict()
-        data_['answer_options'] = answer_array
+        data_['answer_options'] = json.loads(request.data.get('answer_options'))
         data_['user_id'] = request.user.id
         serializer = AnswerSerializer(data=data_)
         if serializer.is_valid():
             serializer.save()
-            print(serializer.data['answer_options'])
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
