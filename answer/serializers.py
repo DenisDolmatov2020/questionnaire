@@ -11,7 +11,7 @@ class AnswerOptionSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    answer_items = AnswerOptionSerializer(many=True, required=False)
+    answer_options = AnswerOptionSerializer(many=True, required=False)
 
     class Meta:
         model = Answer

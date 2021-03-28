@@ -13,7 +13,7 @@ class Answer(models.Model):
 
 # выбранные варианты ответов на вопросы в опросе
 class AnswerOption(models.Model):
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='answer_items')
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='answer_options')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
     text = models.TextField(verbose_name='Текс ответа', null=True)
     option = models.ForeignKey(QuestionOption, on_delete=models.CASCADE, verbose_name='Вариант ответа', null=True)

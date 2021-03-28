@@ -17,11 +17,8 @@ class AnswerViewSet(ViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args):
-        print(111111111111)
-        print(request.data)
         answer_options = json.loads(request.data.get('answer_options'))
         answer_array = []
-        print(2222222222)
         for index, answer_item in enumerate(answer_options):
             question = Question.objects.get(id=answer_item['question'])
             if question.type_answer == 'text':
@@ -41,12 +38,9 @@ class AnswerViewSet(ViewSet):
         data_['answer_options'] = answer_array
         data_['user_id'] = request.user.id
         serializer = AnswerSerializer(data=data_)
-        print('SERIALIZER DATA')
-        print(serializer.data)
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data['answer_options'])
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print(serializer.data)
-            print(serializer.errors)
             return Response(status=status.HTTP_400_BAD_REQUEST)
