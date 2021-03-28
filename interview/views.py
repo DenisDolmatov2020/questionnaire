@@ -1,5 +1,5 @@
 import datetime
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import ListAPIView
 from interview.models import Interview
 from interview.serializers import InterviewSerializer
 

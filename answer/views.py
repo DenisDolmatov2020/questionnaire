@@ -3,24 +3,24 @@ from rest_framework.response import Response
 from rest_framework.utils import json
 from rest_framework.viewsets import ViewSet
 from answer.models import Answer
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser, FileUploadParser
 from answer.serializers import AnswerSerializer
 from question.models import Question
 
 
 class AnswerViewSet(ViewSet):
-    parser_classes = (MultiPartParser, FormParser, JSONParser, FileUploadParser)
-    file_content_parser_classes = (JSONParser, FileUploadParser)
     queryset = Answer.objects.all()
     serializer = AnswerSerializer
 
+    # список всех пройденных опросов пользователя
     def list(self, request, *args):
         serializer = self.serializer(Answer.objects.filter(user=request.user), many=True)
         return Response(serializer.data)
 
     def create(self, request, *args):
+        print(111111111111)
         answer_options = json.loads(request.data.get('answer_options'))
         answer_array = []
+        print(2222222222)
         for index, answer_item in enumerate(answer_options):
             question = Question.objects.get(id=answer_item['question'])
             if question.type_answer == 'text':
@@ -40,6 +40,8 @@ class AnswerViewSet(ViewSet):
         data_['answer_options'] = answer_array
         data_['user_id'] = request.user.id
         serializer = AnswerSerializer(data=data_)
+        print('SERIALIZER DATA')
+        print(serializer.data)
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)

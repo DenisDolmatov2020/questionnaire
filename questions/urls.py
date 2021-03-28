@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from interview.views import InterviewList, InterviewCreate
+from interview.views import InterviewList
 from answer.views import AnswerViewSet
 
 urlpatterns = [
