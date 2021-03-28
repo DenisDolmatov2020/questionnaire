@@ -18,6 +18,7 @@ class AnswerViewSet(ViewSet):
 
     def create(self, request, *args):
         print(111111111111)
+        print(request.data)
         answer_options = json.loads(request.data.get('answer_options'))
         answer_array = []
         print(2222222222)
